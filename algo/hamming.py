@@ -6,18 +6,20 @@ import numpy as np
 class HammingRecommender(Recommender):
     def __init__(self, data: List[Coworking]):
         # get all tags from all coworkings
-        all_tags = [ tag.id for coworking in data for tag in coworking.tags ]
-        all_tags = set(all_tags)
+        all_tags = set([ tag.id for coworking in data for tag in coworking.tags ])
 
         # convert coworkings to vectors
         # if a coworking has a tag, then the corresponding element in the vector is 1, otherwise 0
         def coworking_to_vec(coworking: Coworking):
             vec = []
+
+            coworking_tags = set([ tag.id for tag in coworking.tags ])
             for tag in all_tags:
-                if tag in coworking.tags:
+                if tag in coworking_tags:
                     vec.append(1)
                 else:
                     vec.append(0)
+    
             return vec
         
         self._data = np.array(list(map(coworking_to_vec, data)))
@@ -34,7 +36,8 @@ class HammingRecommender(Recommender):
 
         # calculate Manhattan distance between vec and all other vectors
         # because vec is a binary vector, Manhattan distance is the same as Hamming distance
-        distances = np.sum(np.abs(self._data - vec), axis=1)
+        distances = np.abs(np.subtract(vec, self._data))
+        distances = np.sum(distances, axis=1)
 
         # sort distances in ascending order
         sorted_indices = np.argsort(distances)
