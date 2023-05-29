@@ -37,6 +37,18 @@ class GeoCoords:
     lat: float
     lon: float
 
+PlaceId = int
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class Place:
+    id: PlaceId
+    name: str
+    type: str
+    price: int
+    stop_price: Optional[int] = None
+    seats_count: Optional[int] = None
+
 CoworkingId = int
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -47,7 +59,16 @@ class Coworking:
     coordinates: GeoCoords
     tags: List[Tag]
     undergrounds: List[MetroStation]
+    places: List[Place]
     review_rate: float
     review_count: int
     rates_count: int
     opening_hours: OpeningHours
+
+    @property
+    def avg_price_per_workplace(self) -> float:
+        def avg_price(place: Place) -> float:
+            seats_count = place.seats_count or 1
+            return place.price / seats_count
+        
+        return sum(map(avg_price, self.places)) / len(self.places)

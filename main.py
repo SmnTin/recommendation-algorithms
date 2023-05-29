@@ -18,7 +18,7 @@ def main():
     data = Coworking.schema().load(json_data, many=True)
 
     if args.algo == 'euclid-pro':
-        recommendations, distances = euclidian_pro.recommend(data, args.coworking, args.n)
+        recommendations, distances = EuclideanProRecommender.recommend(data, args.coworking, args.n)
         print('Recommended Coworkings:')
         for coworking, distance in zip(recommendations, distances):
             print(f'- {coworking}, Distance: {distance}')

@@ -1,2 +1,4 @@
 dataclasses-json
 numpy
+scipy
+scikit-learn
